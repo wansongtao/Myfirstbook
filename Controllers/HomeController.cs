@@ -21,14 +21,19 @@ namespace MyFirstBook.Controllers
         //}
         #endregion
 
-        private readonly ILogger<HomeController> _logger;
+        //private readonly ILogger<HomeController> _logger;
 
-        public HomeController(ILogger<HomeController> logger)
-        {
-            _logger = logger;
-        }
+        //public HomeController(ILogger<HomeController> logger)
+        //{
+        //    _logger = logger;
+        //}
 
         public IActionResult Index()
+        {
+            return View();
+        }
+
+        public IActionResult Bookview()
         {
             return View();
         }
@@ -44,6 +49,13 @@ namespace MyFirstBook.Controllers
             var json = booklist.GetBookID(id);
             return json;
             //return Json(new { success = false, msg = "hello" });
+        }
+
+        public string Getbookall()
+        {
+            var allbooklist = new BookController();
+            string json = allbooklist.GetBook();
+            return json;
         }
 
         /// <summary>
@@ -80,15 +92,15 @@ namespace MyFirstBook.Controllers
             return json;
         }
 
-        public IActionResult Privacy()
-        {
-            return View();
-        }
+        //public IActionResult Privacy()
+        //{
+        //    return View();
+        //}
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
+        //[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        //public IActionResult Error()
+        //{
+        //    return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        //}
     }
 }

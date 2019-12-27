@@ -1,0 +1,60 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Book</title>
+</head>
+<body>
+    <table id="demo" lay-filter="test"></table>
+
+    @*<table class="layui-table" lay-data="{height:315, url:'/demo/table/user/', page:true, id:'test'}" lay-filter="test">
+        <thead>
+            <tr>
+                <th lay-data="{field:'id', width:80, sort: true}">ID</th>
+                <th lay-data="{field:'username', width:80}">用户名</th>
+                <th lay-data="{field:'sex', width:80, sort: true}">性别</th>
+                <th lay-data="{field:'city'}">城市</th>
+                <th lay-data="{field:'sign'}">签名</th>
+                <th lay-data="{field:'experience', sort: true}">积分</th>
+                <th lay-data="{field:'score', sort: true}">评分</th>
+                <th lay-data="{field:'classify'}">职业</th>
+                <th lay-data="{field:'wealth', sort: true}">财富</th>
+            </tr>
+        </thead>
+    </table>*@
+
+    <script>
+
+        $(document).ready(function () {
+            layui.use('table', function () {
+                var table = layui.table;
+
+                //第一个实例
+                table.render({
+                    elem: '#demo'
+                    , height: 312
+                    , url: 'Home/Getbookall' //数据接口
+                    , page: true //开启分页
+                    ,data: json
+                    , cols: [[ //表头
+                        { field: 'BookId', title: 'ID', width: 80, sort: true, fixed: 'left' }
+                        , { field: 'BookName', title: '书名', width: 80 }
+                        , { field: 'Author', title: '作者', width: 80, sort: true }
+                        , { field: 'Price', title: '价格', width: 80 }
+                        , { field: 'Publishing', title: '出版社', width: 177 }
+                    ]]
+                });
+
+            });
+        });
+
+    </script>
+
+</body>
+</html>

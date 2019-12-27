@@ -89,9 +89,10 @@
         <div class="layui-form-item">
             <div class="layui-input-block">
                 <button type="button" id="Add" class="layui-btn layui-btn-radius layui-btn-danger">添加</button>
-                
                 <button type="button" id="Update" class="layui-btn layui-btn-radius layui-btn-danger">修改</button>
                 <button type="reset" class="layui-btn layui-btn-radius layui-btn-danger">重置</button>
+
+                <button type="button" id="JumpToPage" class="layui-btn layui-btn-radius layui-btn-danger">跳转页面</button>
             </div>
         </div>
 
@@ -121,11 +122,14 @@
                             }*/
 
                             if (json.state == 0) {
-                                alert(json.msg);
+
+                                layui.use('layer', function(){
+                                    var layer = layui.layer;
+                                    layer.alert(json.msg, {icon: 5});
+                                });                                 
                             }
                             else {
-
-                                $("#all").val(data);
+                                //$("#all").val(data);
                                 $("#BookName").val(json[0].BookName);
                                 $("#Author").val(json[0].Author);
                                 $("#Price").val(json[0].Price);
@@ -135,7 +139,11 @@
                     });
                 }
                 else {
-                    alert("请先输入您要查询的ID");
+                    layui.use('layer', function () {
+                        var layer = layui.layer;
+                        layer.alert('请先输入您要查询的ID', { icon: 5 });
+                    }); 
+                    
                 }
             });
 
@@ -164,18 +172,29 @@
                             var json = JSON.parse(data);
 
                             if (json.state == 1) {
-                                //成功
-                                alert(json.msg);
+                                //成功                                
+                                layui.use('layer', function(){
+                                    var layer = layui.layer;
+                                    layer.alert(json.msg, { icon: 6 });
+                                });
                             }
                             else {
                                 //失败
-                                alert(json.msg);
+                                layui.use('layer', function(){
+                                    var layer = layui.layer;
+                                    layer.alert(json.msg, { icon: 5 });
+                                });
+                                
                             }
                         }
                     });
                 }
                 else {
-                    alert("所有信息都不能为空");
+                    
+                    layui.use('layer', function () {
+                        var layer = layui.layer;
+                        layer.alert('所有信息都不能为空', { icon: 5 });
+                    });
                 }
             });
 
@@ -205,16 +224,26 @@
                             var json = JSON.parse(data);
 
                             if (json.state == 1) {
-                                alert(json.msg);
+                                layui.use('layer', function(){
+                                    var layer = layui.layer;
+                                    layer.alert(json.msg, { icon: 6 });
+                                });
                             }
                             else {
-                                alert(msg);
+                                layui.use('layer', function(){
+                                    var layer = layui.layer;
+                                    layer.alert(json.msg, { icon: 5 });
+                                });
                             }
                         }
                     });
                 }
                 else {
-                    alert("请输入所有书籍有关信息");
+                    
+                    layui.use('layer', function () {
+                        var layer = layui.layer;
+                        layer.alert('请输入所有书籍有关信息', { icon: 5 });
+                    });
                 }
 
             });
@@ -233,20 +262,34 @@
                             var json = JSON.parse(data);
 
                             if (json.state == 1) {
-                                alert(json.msg);
+                                layui.use('layer', function(){
+                                    var layer = layui.layer;
+                                    layer.alert(json.msg, { icon: 6 });
+                                });
                             }
                             else {
-                                alert(msg);
+                                layui.use('layer', function(){
+                                    var layer = layui.layer;
+                                    layer.alert(json.msg, { icon: 5 });
+                                });
                             }
                         }
                     });
                 }
                 else {
-                    alert("请输入您要删除书籍信息的ID");
+                    
+                    layui.use('layer', function () {
+                        var layer = layui.layer;
+                        layer.alert('请输入您要删除书籍信息的ID', { icon: 5 });
+                    });
                 }
             });
 
-           
+            //跳转页面
+            $("#JumpToPage").on("click", function () {
+                window.location.href = "Home/Bookview";
+            });
+
         });
     </script>
 </body>
