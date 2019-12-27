@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using MyFirstBook.Models;
 
@@ -11,8 +12,16 @@ namespace MyFirstBook.Controllers
 {
     public class HomeController : Controller
     {
+        #region 读取appsettings里的数据库连接字符串
+        //private readonly string MyConnectionString;
+
+        //public HomeController(IConfiguration configuration)
+        //{
+        //    MyConnectionString = configuration.GetSection("ConnectionStrings")["OracleConnectionString"];
+        //}
+        #endregion
+
         private readonly ILogger<HomeController> _logger;
-        public string json;
 
         public HomeController(ILogger<HomeController> logger)
         {
@@ -24,9 +33,50 @@ namespace MyFirstBook.Controllers
             return View();
         }
 
+        /// <summary>
+        /// 根据ID查询书籍信息
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public string GetBook(int id)
         {
-            string booklist = new Book();
+            var booklist = new BookController();
+            var json = booklist.GetBookID(id);
+            return json;
+            //return Json(new { success = false, msg = "hello" });
+        }
+
+        /// <summary>
+        /// 修改书籍信息
+        /// </summary>
+        /// <param name="ID"></param>
+        /// <param name="BookName"></param>
+        /// <param name="Author"></param>
+        /// <param name="Price"></param>
+        /// <param name="Publishing"></param>
+        /// <returns></returns>
+        public string PutBook(int ID, string BookName, string Author,
+            string Price, string Publishing)
+        {
+            var updatebooklist = new BookController();
+            string json = updatebooklist.UpdateBook(ID, BookName, Author, Price, Publishing);
+            return json;
+        }
+
+        //添加书籍信息
+        public string AddBookone(int ID, string BookName, string Author,
+            string Price, string Publishing)
+        {
+            var addbooklist = new BookController();
+            string json = addbooklist.AddBook(ID, BookName, Author, Price, Publishing);
+            return json;
+        }
+
+        //删除书籍信息
+        public string DeleteBookOne(int id)
+        {
+            var delbooklist = new BookController();
+            string json = delbooklist.DeleteBook(id);
             return json;
         }
 

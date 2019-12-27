@@ -57,6 +57,10 @@
             "Oracle.ManagedDataAccess.Core": {
               "target": "Package",
               "version": "[2.19.60, )"
+            },
+            "System.Configuration.ConfigurationManager": {
+              "target": "Package",
+              "version": "[4.7.0, )"
             }
           },
           "imports": [

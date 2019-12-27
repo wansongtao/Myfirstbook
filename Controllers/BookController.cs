@@ -16,17 +16,12 @@ namespace MyFirstBook.Controllers
     [ApiController]
     public class BookController : ControllerBase
     {
-        #region 读取appsettings里的数据库连接字符串
-        private readonly string MyConnectionString;
-
-        public BookController(IConfiguration configuration)
-        {
-            MyConnectionString = configuration.GetSection("ConnectionStrings")["OracleConnectionString"];
-        }
+        #region 获取Startup.cs里的数据库连接字符串
+        private readonly string MyConnectionString = Startup.MyConnectionString;
         #endregion
 
         #region 定义返回信息
-        public int state = 0;  //0失败， 1成功
+        public int state;
         public string msg = "";  //具体信息
         public string json;
         #endregion
@@ -83,6 +78,7 @@ namespace MyFirstBook.Controllers
                     }
                     else
                     {
+                        state = 0;
                         msg = "未查找到数据";
                         json = "{\"state\":\"" + state + "\", \"msg\":\"" + msg + "\"}";
                     }
@@ -92,7 +88,9 @@ namespace MyFirstBook.Controllers
             }
             catch (Exception ex)
             {
+                state = 0;
                 msg = ex.Message;
+                //json = Json(new { success = false, msg = ex.Message });
                 json = "{\"state\":\"" + state + "\", \"msg\":\"" + msg + "\"}";
                 return json;
             }
@@ -100,16 +98,16 @@ namespace MyFirstBook.Controllers
 
         // POST: api/Book  添加一条书籍信息
         [HttpPost]
-        public string AddBook(int BookId, string BookName, string Author, string Price, string Publishing)
+        public string AddBook(int ID, string BookName, string Author, string Price, string Publishing)
         {
             try
             {
                 string sql = "insert into book (BookId, BookName, Author, Price, Publishing) " +
-                    "values(:BookId, :BookName, :Author, :Price, :Publishing)";
+                    "values(:ID, :BookName, :Author, :Price, :Publishing)";
 
                 using(OracleConnection conn = new OracleConnection(MyConnectionString))
                 {
-                    int addbooklist = conn.Execute(sql, new { BookId, BookName, Author, Price, Publishing });
+                    int addbooklist = conn.Execute(sql, new { ID, BookName, Author, Price, Publishing });
 
                     if(addbooklist > 0)
                     {
@@ -118,6 +116,7 @@ namespace MyFirstBook.Controllers
                     }
                     else
                     {
+                        state = 0;
                         msg = "添加失败";
                     }
                 }
@@ -127,6 +126,7 @@ namespace MyFirstBook.Controllers
             }
             catch(Exception ex)
             {
+                state = 0;
                 msg = ex.Message;
                 json = "{\"state\":\"" + state + "\", \"msg\":\"" + msg + "\"}";
                 return json;
@@ -135,17 +135,17 @@ namespace MyFirstBook.Controllers
 
         // PUT: api/Book/5  根据ID修改书籍信息
         [HttpPut("{id}")]
-        public string UpdateBook(int BookId, string BookName, string Author, string Price, string Publishing)
+        public string UpdateBook(int ID, string BookName, string Author, string Price, string Publishing)
         {
             try
             {
                 string sql = "update book set BookName = :BookName, Author = :Author, " +
-                    " Price = :Price, Publishing = :publishing where BookId = :BookId";
+                    " Price = :Price, Publishing = :publishing where BookId = :ID";
 
                 using(OracleConnection conn = new OracleConnection(MyConnectionString))
                 {
                     int updatebook = conn.Execute(sql, new {
-                        BookId,
+                        ID,
                         BookName,
                         Author,
                         Price,
@@ -159,6 +159,7 @@ namespace MyFirstBook.Controllers
                     }
                     else
                     {
+                        state = 0;
                         msg = "修改失败";
                     }
                 }
@@ -167,6 +168,7 @@ namespace MyFirstBook.Controllers
             }
             catch(Exception ex)
             {
+                state = 0;
                 msg = ex.Message;
                 json = "{\"state\":\"" + state + "\", \"msg\":\"" + msg + "\"}";
                 return json;
@@ -175,7 +177,7 @@ namespace MyFirstBook.Controllers
 
         // DELETE: api/ApiWithActions/5
         [HttpDelete("{id}")]
-        public string Delete(int id)  //根据ID删除一条数据
+        public string DeleteBook(int id)  //根据ID删除一条数据
         {
             try
             {
@@ -192,7 +194,7 @@ namespace MyFirstBook.Controllers
                     }
                     else
                     {
-                        state = 1;
+                        state = 0;
                         msg = "删除失败";
                     }
                 }
@@ -201,6 +203,7 @@ namespace MyFirstBook.Controllers
             }
             catch(Exception ex)
             {
+                state = 0;
                 msg = ex.Message;
                 json = "{\"state\":\"" + state + "\", \"msg\":\"" + msg + "\"}";
                 return json;

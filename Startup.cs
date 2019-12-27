@@ -13,12 +13,15 @@ namespace MyFirstBook
 {
     public class Startup
     {
+        #region 读取appsettings里的数据库连接字符串
+        public static string MyConnectionString;
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            MyConnectionString = configuration.GetSection("ConnectionStrings")["OracleConnectionString"];
         }
 
-        public IConfiguration Configuration { get; }
+        //public IConfiguration Configuration { get; }
+        #endregion
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
