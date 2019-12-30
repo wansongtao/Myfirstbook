@@ -38,6 +38,11 @@ namespace MyFirstBook.Controllers
             return View();
         }
 
+        public IActionResult Addbook()
+        {
+            return View();
+        }
+
         /// <summary>
         /// 根据ID查询书籍信息
         /// </summary>
@@ -48,9 +53,9 @@ namespace MyFirstBook.Controllers
             var booklist = new BookController();
             var json = booklist.GetBookID(id);
             return json;
-            //return Json(new { success = false, msg = "hello" });
         }
 
+        //查询所有书籍信息
         public string Getbookall()
         {
             var allbooklist = new BookController();

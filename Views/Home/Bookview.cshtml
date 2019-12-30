@@ -9,50 +9,194 @@
 <head>
     <meta name="viewport" content="width=device-width" />
     <title>Book</title>
+    <link href="~/Content/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Content/bootstrap/css/bootstrap-table.min.css" rel="stylesheet" />
+    <link href="~/Content/bootstrap/css/table.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="../../Content/layui/css/layui.css" />
+
+    <script src="~/Content/layui/layui.js"></script>
+    <script src="~/Content/jQuery/jquery-3.4.1.min.js"></script>
+    <script src="~/Content/bootstrap/js/bootstrap.min.js"></script>
+    <script src="~/Content/bootstrap/js/bootstrap-table.min.js"></script>
+    <script src="~/Content/bootstrap/js/bootstrap-table-zh-CN.js"></script>
 </head>
 <body>
-    <table id="demo" lay-filter="test"></table>
+   
+    <div style="width:800px; height:auto;margin:auto;">
 
-    @*<table class="layui-table" lay-data="{height:315, url:'/demo/table/user/', page:true, id:'test'}" lay-filter="test">
-        <thead>
-            <tr>
-                <th lay-data="{field:'id', width:80, sort: true}">ID</th>
-                <th lay-data="{field:'username', width:80}">用户名</th>
-                <th lay-data="{field:'sex', width:80, sort: true}">性别</th>
-                <th lay-data="{field:'city'}">城市</th>
-                <th lay-data="{field:'sign'}">签名</th>
-                <th lay-data="{field:'experience', sort: true}">积分</th>
-                <th lay-data="{field:'score', sort: true}">评分</th>
-                <th lay-data="{field:'classify'}">职业</th>
-                <th lay-data="{field:'wealth', sort: true}">财富</th>
-            </tr>
-        </thead>
-    </table>*@
+        <div style="width:auto;height:60px;margin:auto;">
+            @*<button type="button" class="layui-btn">增加</button>
+            <button type="button" class="layui-btn ">编辑</button>
+            <button type="button" class="layui-btn">删除</button>*@
+        </div>
+
+        <table id="Book" data-pagination="true" data-query-params="queryParams" data-striped="true"
+               data-page-size="20" data-classes="table-hover table-no-bordered">
+
+            <thead>
+                <tr>
+
+                    <th data-checkbox="true" style="text-align:center;">选择</th>
+                    @*<th data-field="BookId" data-sortable="true">ID</th>*@
+                    <th data-field="BookName" data-sortable="true">书名</th>
+                    <th data-field="Author" data-sortable="true">作者</th>
+                    <th data-field="Price" data-sortable="true">价格</th>
+                    <th data-field="Publishing" data-sortable="true">出版社</th>
+                    @*<th data-field="Remark" data-sortable="true">备注</th>
+                    <th data-field="State" data-sortable="true" data-formatter="operation1" data-events="actionEvents">状态</th>*@
+                    <th data-field="BookId" data-formatter="operation1" data-events="actionEvents">操作</th>
+
+                </tr>
+            </thead>
+
+        </table>
+    </div>
+
+    
 
     <script>
 
         $(document).ready(function () {
-            layui.use('table', function () {
-                var table = layui.table;
 
-                //第一个实例
-                table.render({
-                    elem: '#demo'
-                    , height: 312
-                    , url: 'Home/Getbookall' //数据接口
-                    , page: true //开启分页
-                    ,data: json
-                    , cols: [[ //表头
-                        { field: 'BookId', title: 'ID', width: 80, sort: true, fixed: 'left' }
-                        , { field: 'BookName', title: '书名', width: 80 }
-                        , { field: 'Author', title: '作者', width: 80, sort: true }
-                        , { field: 'Price', title: '价格', width: 80 }
-                        , { field: 'Publishing', title: '出版社', width: 177 }
-                    ]]
+            var layer;
+            layui.use('layer', function () {
+                layer = layui.layer;
+            });
+
+            //layer.load();
+
+            var functionmethod = Book_List;
+
+            //ajax请求
+            function getbooktable(functionmethod)
+            {
+                $.ajax({
+                    type: "GET",
+                    url: "Getbookall",
+                    //data: {Isdelete: "0"},
+                    success: functionmethod,
+                    error: function (xhr) {
+                        layer.alert(xhr.statusText, { icon: 5 });
+                    }
+                });                
+            }
+
+            getbooktable(functionmethod);
+
+            //赋值给table
+            function Book_List(data) {
+
+                layer.closeAll('loading');
+
+                var json = JSON.parse(data);  //将json字符串转换为json对象
+                
+
+                $('#Book').bootstrapTable({
+                    data: json
                 });
 
-            });
+                var allData = [];
+
+                for (var i = 0; i < json.length; i++) {
+                    allData.push(json[i]);
+                }
+            }
+
+            //重载表格
+            function Book_ListLoad(data) {
+
+                layer.closeAll('loading');
+
+                var json = JSON.parse(data);
+
+                $('#Book').bootstrapTable('load', json);
+                var allData = [];
+
+                for (var i = 0; i < json.length; i++) {
+                    allData.push(json[i]);
+                }
+
+            }
+
+            window.actionEvents = {
+                //添加
+                'click #Add': function (e, value, row, index) {
+                    var ID = value;
+
+                    var index = layer.open({
+                            title: '添加',
+                            type: 2,
+                            area: ['50%', '80%'],
+                            fix: false, //不固定
+                            maxmin: true,
+                            scrollbar: true,
+                            content: 'Addbook',  //?ID=' + ID
+                            end: function () {
+                                var functionmethod = Book_ListLoad;
+                                getbooktable(functionmethod);
+                            }
+                    });
+                },
+
+                'click #update': function (e, value, row, index) {
+                    var ID = value;
+
+                    var index = layer.open({
+                        title: '修改',
+                        type: 2,
+                        area: ['50%', '80%'],
+                        fix: false,
+                        maxmin: true,
+                        scrollbar: true,
+                        content: 'PutBook?ID=' + ID,
+                        end: function () {
+                            var functionmethod = Book_ListLoad;
+                            getbooktable(functionmethod);
+                        }
+                    });
+                },
+
+                'click #delete': function (e, value, row, index) {
+                    // 删除
+                    var id = row.BookId;
+
+                    var index = layer.confirm('确定删除？', {
+                            btn: ['确定', '取消'] //按钮
+                    }, function () {
+                            var jsondata = { id: id };
+
+                            $.ajax({
+                                type: "DELETE",
+                                url: "DeleteBookOne",
+                                data: jsondata,
+                                success: function (data) {
+                                    var json = JSON.parse(data);
+
+                                    if (json.state == 1) {
+
+                                        var functionmethod = Book_ListLoad;
+                                        getbooktable(functionmethod);
+
+                                        layer.alert(json.msg, { icon: 6 });
+                                        
+                                    }
+                                    else {
+                                        layer.alert(json.msg, { icon: 5 });
+                                    }
+                                },
+                                error: function (xhr) {
+                                    layer.alert(xhr.statusText, { icon: 5 });
+                                }
+                            });
+                    });                
+                }
+            };
         });
+
+        //增删改
+        function operation1(value, row, index) {
+            return '<div id="' + row.ID + '" style="white-space:nowrap; ">&nbsp;&nbsp;&nbsp;<button type="button" id="Add" class="layui-btn layui-btn-xs">添加</button>&nbsp;&nbsp;&nbsp;<button type="button" id="update" class="layui-btn layui-btn-xs">修改</button>&nbsp;&nbsp;&nbsp;<button type="button" id="delete" class="layui-btn layui-btn-xs">删除</button></div>';
+        }
 
     </script>
 

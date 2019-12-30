@@ -21,9 +21,9 @@ namespace MyFirstBook.Controllers
         #endregion
 
         #region 定义返回信息
-        public int state;
+        public int state;  //0失败，1成功
         public string msg = "";  //具体信息
-        public string json;
+        public string json;  //返回字符串
         #endregion
 
         // GET: api/Book
@@ -32,15 +32,15 @@ namespace MyFirstBook.Controllers
         {
             try
             {
-                string sql = "select BookId, BookName, Author, Price, Publishing from Book";
+                string sql = "select BookId, BookName, Author, Price, Publishing from Book where Isdelete = :Isdelete";
 
                 using(OracleConnection conn = new OracleConnection(MyConnectionString))
                 {
-                    var booklist = conn.Query<Book>(sql).ToList();
+                    var booklist = conn.Query<Book>(sql, new { Isdelete = 0}).ToList();
 
                     if(booklist.Count > 0)
                     {
-                        json = JsonConvert.SerializeObject(booklist);  //转化为json写法
+                        json = JsonConvert.SerializeObject(booklist);  //转化为json字符串写法
                     }
                     else
                     {
@@ -105,20 +105,32 @@ namespace MyFirstBook.Controllers
                 string sql = "insert into book (BookId, BookName, Author, Price, Publishing) " +
                     "values(:ID, :BookName, :Author, :Price, :Publishing)";
 
+                string cxsql = "select BookId from Book where BookId = :BookId";
+
                 using(OracleConnection conn = new OracleConnection(MyConnectionString))
                 {
-                    int addbooklist = conn.Execute(sql, new { ID, BookName, Author, Price, Publishing });
-
-                    if(addbooklist > 0)
+                    var booklist = conn.Query<Book>(cxsql, new { BookId = ID }).ToList();
+                    if(booklist.Count > 0)
                     {
-                        state = 1;
-                        msg = "添加成功";
+                        state = 0;
+                        msg = "ID已存在";
                     }
                     else
                     {
-                        state = 0;
-                        msg = "添加失败";
+                        int addbooklist = conn.Execute(sql, new { ID, BookName, Author, Price, Publishing });
+
+                        if (addbooklist > 0)
+                        {
+                            state = 1;
+                            msg = "添加成功";
+                        }
+                        else
+                        {
+                            state = 0;
+                            msg = "添加失败";
+                        }
                     }
+                    
                 }
 
                 json = "{\"state\":\"" + state + "\", \"msg\":\"" + msg + "\"}";
@@ -181,11 +193,12 @@ namespace MyFirstBook.Controllers
         {
             try
             {
-                string sql = "delete from Book where BookId = :id";
+                //string sql = "delete from Book where BookId = :id";
+                string sql = "update book set Isdelete = :Isdelete where BookId = :id";
 
                 using(OracleConnection conn = new OracleConnection(MyConnectionString))
                 {
-                    int listone = conn.Execute(sql, new { id });
+                    int listone = conn.Execute(sql, new { Isdelete = 1,id });
 
                     if(listone > 0)
                     {

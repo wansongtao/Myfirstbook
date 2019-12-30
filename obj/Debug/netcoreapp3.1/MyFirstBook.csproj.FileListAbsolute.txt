@@ -116,3 +116,5 @@ C:\MyFirstBook\bin\Debug\netcoreapp3.1\runtimes\win\lib\netcoreapp3.0\System.Dra
 C:\MyFirstBook\bin\Debug\netcoreapp3.1\runtimes\win\lib\netstandard2.0\System.Security.Cryptography.ProtectedData.dll
 C:\MyFirstBook\obj\Debug\netcoreapp3.1\MyFirstBook.MvcApplicationPartsAssemblyInfo.cache
 C:\MyFirstBook\obj\Debug\netcoreapp3.1\Razor\Views\Home\Bookview.cshtml.g.cs
+C:\MyFirstBook\obj\Debug\netcoreapp3.1\Razor\Views\Home\Addbook.cshtml.g.cs
+C:\MyFirstBook\obj\Debug\netcoreapp3.1\Razor\Views\Home\Updatebook.cshtml.g.cs

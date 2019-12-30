@@ -100,6 +100,11 @@
 
     
     <script>
+        var layer;
+        layui.use('layer', function () {
+            layer = layui.layer;
+        });
+
         $(document).ready(function () {
 
             //根据ID查询书籍信息
@@ -107,7 +112,7 @@
 
                 var id = $("#ID").val();
 
-                if (id != null && id != "") {
+                if (id != "") {
 
                     $.ajax({
                         type: "GET",
@@ -123,10 +128,7 @@
 
                             if (json.state == 0) {
 
-                                layui.use('layer', function(){
-                                    var layer = layui.layer;
-                                    layer.alert(json.msg, {icon: 5});
-                                });                                 
+                                layer.alert(json.msg, {icon: 5});                                 
                             }
                             else {
                                 //$("#all").val(data);
@@ -135,15 +137,14 @@
                                 $("#Price").val(json[0].Price);
                                 $("#Publishing").val(json[0].Publishing);
                             }
+                        },
+                        error: function (xhr) {
+                            layer.alert(xhr.statusText, { icon: 5 });
                         }
                     });
                 }
                 else {
-                    layui.use('layer', function () {
-                        var layer = layui.layer;
-                        layer.alert('请先输入您要查询的ID', { icon: 5 });
-                    }); 
-                    
+                    layer.alert('请先输入您要查询的ID', { icon: 5 });                     
                 }
             });
 
@@ -173,28 +174,20 @@
 
                             if (json.state == 1) {
                                 //成功                                
-                                layui.use('layer', function(){
-                                    var layer = layui.layer;
-                                    layer.alert(json.msg, { icon: 6 });
-                                });
+                                layer.alert(json.msg, { icon: 6 });
                             }
                             else {
                                 //失败
-                                layui.use('layer', function(){
-                                    var layer = layui.layer;
-                                    layer.alert(json.msg, { icon: 5 });
-                                });
-                                
+                                layer.alert(json.msg, { icon: 5 });
                             }
+                        },
+                        error: function (xhr) {
+                            layer.alert(xhr.statusText, { icon: 5 });
                         }
                     });
                 }
                 else {
-                    
-                    layui.use('layer', function () {
-                        var layer = layui.layer;
-                        layer.alert('所有信息都不能为空', { icon: 5 });
-                    });
+                    layer.alert('所有信息都不能为空', { icon: 5 });
                 }
             });
 
@@ -224,26 +217,19 @@
                             var json = JSON.parse(data);
 
                             if (json.state == 1) {
-                                layui.use('layer', function(){
-                                    var layer = layui.layer;
-                                    layer.alert(json.msg, { icon: 6 });
-                                });
+                                layer.alert(json.msg, { icon: 6 });
                             }
                             else {
-                                layui.use('layer', function(){
-                                    var layer = layui.layer;
-                                    layer.alert(json.msg, { icon: 5 });
-                                });
+                                layer.alert(json.msg, { icon: 5 });
                             }
+                        },
+                        error: function (xhr) {
+                            layer.alert(xhr.statusText, { icon: 5 });
                         }
                     });
                 }
                 else {
-                    
-                    layui.use('layer', function () {
-                        var layer = layui.layer;
-                        layer.alert('请输入所有书籍有关信息', { icon: 5 });
-                    });
+                    layer.alert('请输入所有书籍有关信息', { icon: 5 });
                 }
 
             });
@@ -262,26 +248,20 @@
                             var json = JSON.parse(data);
 
                             if (json.state == 1) {
-                                layui.use('layer', function(){
-                                    var layer = layui.layer;
-                                    layer.alert(json.msg, { icon: 6 });
-                                });
+                                layer.alert(json.msg, { icon: 6 });
                             }
                             else {
-                                layui.use('layer', function(){
-                                    var layer = layui.layer;
-                                    layer.alert(json.msg, { icon: 5 });
-                                });
+                                layer.alert(json.msg, { icon: 5 });
                             }
+                        },
+                        error: function (xhr) {
+                            layer.alert(xhr.statusText, { icon: 5 });
                         }
                     });
                 }
                 else {
                     
-                    layui.use('layer', function () {
-                        var layer = layui.layer;
-                        layer.alert('请输入您要删除书籍信息的ID', { icon: 5 });
-                    });
+                    layer.alert('请输入您要删除书籍信息的ID', { icon: 5 });
                 }
             });
 
