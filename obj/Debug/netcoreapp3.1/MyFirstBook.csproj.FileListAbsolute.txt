@@ -118,4 +118,3 @@ C:\MyFirstBook\obj\Debug\netcoreapp3.1\MyFirstBook.MvcApplicationPartsAssemblyIn
 C:\MyFirstBook\obj\Debug\netcoreapp3.1\Razor\Views\Home\Bookview.cshtml.g.cs
 C:\MyFirstBook\obj\Debug\netcoreapp3.1\Razor\Views\Home\Addbook.cshtml.g.cs
 C:\MyFirstBook\obj\Debug\netcoreapp3.1\Razor\Views\Home\Updatebook.cshtml.g.cs
-C:\MyFirstBook\obj\Debug\netcoreapp3.1\MyFirstBook.csprojAssemblyReference.cache

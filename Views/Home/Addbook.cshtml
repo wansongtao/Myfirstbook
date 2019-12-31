@@ -12,6 +12,7 @@
     <link rel="stylesheet" type="text/css" href="~/Content/layui/css/layui.css" />
 
     <script src="~/Content/layui/layui.js"></script>
+    <script src="~/js/Book.js"></script>
     <script src="~/Content/jQuery/jquery-3.4.1.min.js"></script>
 </head>
 <body>
@@ -98,33 +99,12 @@
                             ID: ID, BookName: BookName, Author: Author, Price: Price,
                             Publishing: Publishing
                         };
-
-                        $.ajax({
-                            type: "POST",
-                            url: "AddBookone",
-                            data: jsondata,
-                            success: function (data) {
-
-                                var json = JSON.parse(data);
-
-                                if (json.state == 1) {
-                            
-                                    layer.alert(json.msg, { icon: 6 });
-                                }
-                                else {
-                                    layer.alert(json.msg, { icon: 5 });
-                                }
-                            },
-                            error: function (xhr) {
-                                layer.alert(xhr.statusText, { icon: 5 });
-                            }
-                        });
+                        var Bookfunction = AlterBook;
+                        ajax("POST", "AddBookone", jsondata, Bookfunction);
                     }
                     else {
                         layer.alert('金额格式错误', { icon: 5 });
                     }
-
-                    
                 }
                 else {                
                     layer.alert('请输入所有信息', { icon: 5 });

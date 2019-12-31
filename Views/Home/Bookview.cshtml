@@ -14,6 +14,7 @@
     <link href="~/Content/bootstrap/css/table.css" rel="stylesheet" />
     <link rel="stylesheet" type="text/css" href="../../Content/layui/css/layui.css" />
 
+    <script src="~/js/Book.js"></script>
     <script src="~/Content/layui/layui.js"></script>
     <script src="~/Content/jQuery/jquery-3.4.1.min.js"></script>
     <script src="~/Content/bootstrap/js/bootstrap.min.js"></script>
@@ -24,11 +25,24 @@
    
     <div style="width:800px; height:auto;margin:auto;">
 
-        <div style="width:auto;height:60px;margin:auto;">
-            @*<button type="button" class="layui-btn">增加</button>
-            <button type="button" class="layui-btn ">编辑</button>
-            <button type="button" class="layui-btn">删除</button>*@
-        </div>
+        <div style="width:auto;height:60px;margin:auto;"></div>
+
+        <form id="form_seach">
+
+            <div class="layui-form-item">
+
+                <div class="layui-inline">
+                    <label class="layui-form-label">搜索：</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="seachinput" lay-verify="required" placeholder="请输入书名、作者、出版社" autocomplete="off" class="layui-input">
+                    </div>
+                    <button type="button" id="Inquire" class="layui-btn layui-btn-radius layui-btn-normal">搜索</button>
+                    <button type="button" id="reset" class="layui-btn layui-btn-radius layui-btn-normal">重置</button>
+                </div>
+
+            </div>
+
+        </form>
 
         <table id="Book" data-pagination="true" data-query-params="queryParams" data-striped="true"
                data-page-size="20" data-classes="table-hover table-no-bordered">
@@ -56,63 +70,26 @@
 
     <script>
 
-        var layer;
+        var layer, Bookfunction;
+        var alldata = [];
         layui.use('layer', function () {
             layer = layui.layer;
         });
 
+        //绑定数据
+        function Getbook(Bookfunction) {
+            var jsondata = { Isdelete: 0 };
+            ajax("GET", "Getbookall", jsondata, Bookfunction);
+        }
+
         $(document).ready(function () {
-            var functionmethod = Book_List;
 
-            //ajax请求
-            function getbooktable(functionmethod)
-            {
-                //layer.load();
-                $.ajax({
-                    type: "GET",
-                    url: "Getbookall",
-                    //data: {Isdelete: "0"},
-                    success: functionmethod,
-                    error: function (xhr) {
-                        layer.alert(xhr.statusText, { icon: 5 });
-                    }
-                });                
-            }
+            Bookfunction = Book_List;
 
-            getbooktable(functionmethod);
+            Getbook(Bookfunction); 
+        });
 
-            //赋值给table
-            function Book_List(data) {
-                var json = JSON.parse(data);  //将json字符串转换为json对象
-                
-
-                $('#Book').bootstrapTable({
-                    data: json
-                });
-
-                var allData = [];
-
-                for (var i = 0; i < json.length; i++) {
-                    allData.push(json[i]);
-                }
-
-                //layer.closeAll('loading');
-            }
-
-            //重载表格
-            function Book_ListLoad(data) {
-                var json = JSON.parse(data);
-
-                $('#Book').bootstrapTable('load', json);
-                var allData = [];
-
-                for (var i = 0; i < json.length; i++) {
-                    allData.push(json[i]);
-                }
-                //layer.closeAll('loading');
-            }
-
-            window.actionEvents = {
+        window.actionEvents = {
                 //添加
                 'click #Add': function (e, value, row, index) {
                     var ID = value;
@@ -126,8 +103,9 @@
                             scrollbar: true,
                             content: 'Addbook',  //?ID=' + ID
                             end: function () {
-                                var functionmethod = Book_ListLoad;
-                                getbooktable(functionmethod);
+                                Bookfunction = Bookload;
+                                Getbook(Bookfunction);
+                                layer.alert(json.msg, { icon: 6 });
                             }
                     });
                 },
@@ -144,8 +122,8 @@
                         scrollbar: true,
                         content: 'Updatebook?ID=' + ID,
                         end: function () {
-                            var functionmethod = Book_ListLoad;
-                            getbooktable(functionmethod);
+                            Bookfunction = Bookload;
+                            Getbook(Bookfunction);
                         }
                     });
                 },
@@ -158,39 +136,54 @@
                             btn: ['确定', '取消'] //按钮
                     }, function () {
                             var jsondata = { id: id };
-
-                            $.ajax({
-                                type: "DELETE",
-                                url: "DeleteBookOne",
-                                data: jsondata,
-                                success: function (data) {
-                                    var json = JSON.parse(data);
-
-                                    if (json.state == 1) {
-
-                                        var functionmethod = Book_ListLoad;
-                                        getbooktable(functionmethod);
-
-                                        layer.alert(json.msg, { icon: 6 });
-                                        
-                                    }
-                                    else {
-                                        layer.alert(json.msg, { icon: 5 });
-                                    }
-                                },
-                                error: function (xhr) {
-                                    layer.alert(xhr.statusText, { icon: 5 });
-                                }
-                            });
+                            Bookfunction = Deletebook;
+                            ajax("DELETE", "DeleteBookOne", jsondata, Bookfunction);
                     });                
                 }
-            };
-        });
+        };
 
         //增删改
         function operation1(value, row, index) {
             return '<div id="' + row.ID + '" style="white-space:nowrap; ">&nbsp;&nbsp;&nbsp;<button type="button" id="Add" class="layui-btn layui-btn-xs">添加</button>&nbsp;&nbsp;&nbsp;<button type="button" id="update" class="layui-btn layui-btn-xs">修改</button>&nbsp;&nbsp;&nbsp;<button type="button" id="delete" class="layui-btn layui-btn-xs">删除</button></div>';
         }
+
+
+                //客户端搜索
+        $("#Inquire").on("click", function () {
+
+            var seachinput = $("#seachinput").val();
+
+            if (seachinput == "") {
+                layer.alert("请输入您要查找的内容", { icon: 5 });
+                return false;
+            }
+
+            var tempData = [];
+
+            for (var i = 0; i < alldata.length; i++) {
+                tempData.push(alldata[i]);
+            }
+
+            for (var i = tempData.length - 1; i >= 0; i--) {
+
+                var index = tempData[i].BookName.indexOf(seachinput);
+                var indexone = tempData[i].Author.indexOf(seachinput);
+                var indextwo = tempData[i].Publishing.indexOf(seachinput);
+
+                if (index >= 0 || indexone >= 0 || indextwo >= 0 ) {
+                    $('#table').bootstrapTable('load', tempData[i]);
+                }
+                else
+                    tempData.splice(i, 1);
+            }
+        });
+
+        //重置
+        $("#reset").on("click", function () {
+
+            $('#form_seach')[0].reset();
+            $('#table').bootstrapTable('load', allData);
+        });
 
     </script>
 
