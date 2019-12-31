@@ -16,64 +16,61 @@
 </head>
 <body>
 
-    <div style="margin:auto;">
-        <form id="addbook">
+    <div style="margin: auto;">
+        <div style="height: 60px;"></div>
+        <div class="layui-form-item">
 
-            <div class="layui-form-item">
-
-                <div class="layui-inline">
-                    <label class="layui-form-label">ID：</label>
-                    <div class="layui-input-inline">
-                        <input type="number" id="ID" name="ID" lay-verify="required" placeholder="请输入书籍ID" autocomplete="off" class="layui-input">
-                    </div>
-                </div>
-
-            </div>
-
-            <div class="layui-form-item">
-                <div class="layui-inline">
-                    <label class="layui-form-label">书名：</label>
-                    <div class="layui-input-inline">
-                        <input type="text" id="BookName" name="BookName" lay-verify="required" autocomplete="off" class="layui-input">
-                    </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">ID：</label>
+                <div class="layui-input-inline">
+                    <input type="number" id="ID" name="ID" lay-verify="required" placeholder="请输入书籍ID" autocomplete="off" class="layui-input">
                 </div>
             </div>
 
-            <div class="layui-form-item">
-                <div class="layui-inline">
-                    <label class="layui-form-label">作者：</label>
-                    <div class="layui-input-inline">
-                        <input type="text" id="Author" name="Author" lay-verify="required" autocomplete="off" class="layui-input">
-                    </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">书名：</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="BookName" name="BookName" lay-verify="required" autocomplete="off" class="layui-input">
                 </div>
             </div>
+        </div>
 
-            <div class="layui-form-item">
-                <div class="layui-inline">
-                    <label class="layui-form-label">价格：</label>
-                    <div class="layui-input-inline">
-                        <input type="text" id="Price" name="Price" lay-verify="required" autocomplete="off" class="layui-input">
-                    </div>
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">作者：</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="Author" name="Author" lay-verify="required" autocomplete="off" class="layui-input">
                 </div>
             </div>
+        </div>
 
-            <div class="layui-form-item">
-                <div class="layui-inline">
-                    <label class="layui-form-label">出版社：</label>
-                    <div class="layui-input-inline">
-                        <input type="text" id="Publishing" name="Publishing" lay-verify="required" autocomplete="off" class="layui-input">
-                    </div>
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">价格：</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="Price" name="Price" lay-verify="required" autocomplete="off" class="layui-input">
                 </div>
             </div>
+        </div>
 
-            <div class="layui-form-item">
-                <div class="layui-input-block">
-                    <button type="submit" id="Add" class="layui-btn layui-btn-radius layui-btn-danger">确定</button>
-                    <button type="button" id="cancel" class="layui-btn layui-btn-radius layui-btn-danger">取消</button>
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">出版社：</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="Publishing" name="Publishing" lay-verify="required" autocomplete="off" class="layui-input">
                 </div>
             </div>
+        </div>
 
-        </form>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button type="button" id="Addbook" class="layui-btn layui-btn-radius layui-btn-danger">确定</button>
+                <button type="button" id="cancel" class="layui-btn layui-btn-radius layui-btn-danger">取消</button>
+            </div>
+        </div>
     </div>
     
     <script>
@@ -84,24 +81,18 @@
 
         $(document).ready(function () {
 
-            //var v = $('#addbook').easyform();
-            //v.is_submit = false;
-            //v.complete = function (ef) {
+            $("#Addbook").on("click", function () {
 
-            //};
-
-            //添加
-            $("#Add").on('click', function () {
                 var ID = $("#ID").val();
                 var BookName = $("#BookName").val();
                 var Author = $("#Author").val();
                 var Price = $("#Price").val();
                 var Publishing = $("#Publishing").val();
 
-                var priceformat = new RegExp("^[1-9](\d+)?(\.\d{1,2})?$)|(^0$)|(^\d\.\d{1,2}$");
+                var Priceformat = /(^[1-9]([0-9]+)?(\.[0-9]{1,2})?$)|(^(0){1}$)|(^[0-9]\.[0-9]([0-9])?$)/;  //匹配两位小数金额的正则表达式
 
                 if (ID != "" && BookName != "" && Author != "" && Price != "" && Publishing != "") {
-                    if (priceformat.test(Price) == true) {
+                    if (Priceformat.test(Price)) {
 
                         var jsondata = {
                             ID: ID, BookName: BookName, Author: Author, Price: Price,
@@ -132,17 +123,21 @@
                     else {
                         layer.alert('金额格式错误', { icon: 5 });
                     }
+
+                    
                 }
                 else {                
                     layer.alert('请输入所有信息', { icon: 5 });
                 }
             });
 
-            //取消
-            $("#cancel").on("click", function () {
-                var layerindex = parent.layer.getFrameIndex(window.name); //获取窗口索引
-                parent.layer.close(layerindex);
-            });
+        });
+
+
+        //取消
+        $("#cancel").on("click", function () {
+            var layerindex = parent.layer.getFrameIndex(window.name); //获取窗口索引
+            parent.layer.close(layerindex);
         });
     </script>
 </body>

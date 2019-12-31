@@ -56,20 +56,18 @@
 
     <script>
 
+        var layer;
+        layui.use('layer', function () {
+            layer = layui.layer;
+        });
+
         $(document).ready(function () {
-
-            var layer;
-            layui.use('layer', function () {
-                layer = layui.layer;
-            });
-
-            //layer.load();
-
             var functionmethod = Book_List;
 
             //ajax请求
             function getbooktable(functionmethod)
             {
+                //layer.load();
                 $.ajax({
                     type: "GET",
                     url: "Getbookall",
@@ -85,9 +83,6 @@
 
             //赋值给table
             function Book_List(data) {
-
-                layer.closeAll('loading');
-
                 var json = JSON.parse(data);  //将json字符串转换为json对象
                 
 
@@ -100,13 +95,12 @@
                 for (var i = 0; i < json.length; i++) {
                     allData.push(json[i]);
                 }
+
+                //layer.closeAll('loading');
             }
 
             //重载表格
             function Book_ListLoad(data) {
-
-                layer.closeAll('loading');
-
                 var json = JSON.parse(data);
 
                 $('#Book').bootstrapTable('load', json);
@@ -115,7 +109,7 @@
                 for (var i = 0; i < json.length; i++) {
                     allData.push(json[i]);
                 }
-
+                //layer.closeAll('loading');
             }
 
             window.actionEvents = {
@@ -148,7 +142,7 @@
                         fix: false,
                         maxmin: true,
                         scrollbar: true,
-                        content: 'PutBook?ID=' + ID,
+                        content: 'Updatebook?ID=' + ID,
                         end: function () {
                             var functionmethod = Book_ListLoad;
                             getbooktable(functionmethod);

@@ -147,24 +147,50 @@ namespace MyFirstBook.Controllers
 
         // PUT: api/Book/5  根据ID修改书籍信息
         [HttpPut("{id}")]
-        public string UpdateBook(int ID, string BookName, string Author, string Price, string Publishing)
+        public string UpdateBook(int ID, string BookName, string Author, string Price, string Publishing, int updateid)
         {
             try
             {
-                string sql = "update book set BookName = :BookName, Author = :Author, " +
-                    " Price = :Price, Publishing = :publishing where BookId = :ID";
-
-                using(OracleConnection conn = new OracleConnection(MyConnectionString))
+                using (OracleConnection conn = new OracleConnection(MyConnectionString))
                 {
-                    int updatebook = conn.Execute(sql, new {
-                        ID,
-                        BookName,
-                        Author,
-                        Price,
-                        Publishing
-                    });
+                    int updatebook = 0, errorstatus = 0;
 
-                    if(updatebook > 0)
+                    if (updateid == 0)  //未修改ID
+                    {
+                        string sql = "update book set BookName = :BookName, Author = :Author, " +
+                            " Price = :Price, Publishing = :publishing where BookId = :ID";
+
+                        updatebook = conn.Execute(sql, new
+                        {
+                            ID,
+                            BookName,
+                            Author,
+                            Price,
+                            Publishing
+                        });
+                    }
+                    else
+                    {
+                        string sqlone = "select BookId from Book where BookId = :ID";
+
+                        var selectbook = conn.Query<Book>(sqlone, new { ID }).ToList();
+
+                        if(selectbook.Count > 0)
+                        {
+                            errorstatus = 1;
+                            msg = "ID已存在";
+                        }
+                        else
+                        {
+                            string sqltwo = "Update Book set BookId = :ID, BookName = :BookName, Author = :Author" +
+                                " , Price = :Price, Publishing = :Publishing where BookId = :updateid";
+
+                            updatebook = conn.Execute(sqltwo, new 
+                            { ID, BookName, Author, Price, Publishing, updateid });
+                        }
+                    }
+
+                    if (updatebook > 0)
                     {
                         state = 1;
                         msg = "修改成功";
@@ -172,19 +198,22 @@ namespace MyFirstBook.Controllers
                     else
                     {
                         state = 0;
-                        msg = "修改失败";
+                        if(errorstatus == 0)
+                        {
+                            msg = "修改失败";
+                        }                       
                     }
                 }
                 json = "{\"state\":\"" + state + "\", \"msg\":\"" + msg + "\"}";
                 return json;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 state = 0;
                 msg = ex.Message;
                 json = "{\"state\":\"" + state + "\", \"msg\":\"" + msg + "\"}";
                 return json;
-            }            
+            }
         }
 
         // DELETE: api/ApiWithActions/5

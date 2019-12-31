@@ -43,6 +43,11 @@ namespace MyFirstBook.Controllers
             return View();
         }
 
+        public IActionResult Updatebook()
+        {
+            return View();
+        }
+
         /// <summary>
         /// 根据ID查询书籍信息
         /// </summary>
@@ -66,17 +71,11 @@ namespace MyFirstBook.Controllers
         /// <summary>
         /// 修改书籍信息
         /// </summary>
-        /// <param name="ID"></param>
-        /// <param name="BookName"></param>
-        /// <param name="Author"></param>
-        /// <param name="Price"></param>
-        /// <param name="Publishing"></param>
-        /// <returns></returns>
         public string PutBook(int ID, string BookName, string Author,
-            string Price, string Publishing)
+            string Price, string Publishing, int updateid)
         {
             var updatebooklist = new BookController();
-            string json = updatebooklist.UpdateBook(ID, BookName, Author, Price, Publishing);
+            string json = updatebooklist.UpdateBook(ID, BookName, Author, Price, Publishing, updateid);
             return json;
         }
 

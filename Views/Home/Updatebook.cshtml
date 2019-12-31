@@ -16,7 +16,8 @@
 </head>
 <body>
     <div style="margin:auto;">
-        <form id="addbook">
+        <form id="updatebook">
+            <div style="height: 60px;"></div>
 
             <div class="layui-form-item">
 
@@ -67,7 +68,7 @@
 
             <div class="layui-form-item">
                 <div class="layui-input-block">
-                    <button type="submit" id="Add" class="layui-btn layui-btn-radius layui-btn-danger">确定</button>
+                    <button type="button" id="Update" class="layui-btn layui-btn-radius layui-btn-danger">确定</button>
                     <button type="button" id="cancel" class="layui-btn layui-btn-radius layui-btn-danger">取消</button>
                 </div>
             </div>
@@ -76,12 +77,11 @@
     </div>
 
     <script>
-        var layer;
+        var layer, id, jsonID, jsonBookName, jsonAuthor, jsonPrice, jsonPub;
+
         layui.use('layer', function () {
             layer = layui.layer;
         });
-
-        var id;
 
         function GetQueryString(name) {
             var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
@@ -93,24 +93,92 @@
         $(document).ready(function () {
             id = GetQueryString("ID");
             var jsondata = { id: id };
-            //var BookId = $("#ID").val();
-            //var BookName = $("#BookName").val();
-            //var Author = $("#Author").val();
-            //var Price = $("#Price").val();
-            //var Publishing = $("#Publishing").val();
+            
             $.ajax({
                 type: "GET",
                 url: "GetBook",
                 data: jsondata,
                 success: function (data) {
+                    var json = JSON.parse(data);
 
+                    if (json.state == 0) {
+                        layer.alert(json.msg, { icon: 5 });
+                    }
+                    else {
+                        jsonID = json[0].BookId;
+                        jsonBookName = json[0].BookName;
+                        jsonAuthor = json[0].Author;
+                        jsonPrice = json[0].Price;
+                        jsonPub = json[0].Publishing;
+
+                        $("#ID").val(jsonID);
+                        $("#BookName").val(jsonBookName);
+                        $("#Author").val(jsonAuthor);
+                        $("#Price").val(jsonPrice);
+                        $("#Publishing").val(jsonPub);
+                    }
                 },
                 error: function (xhr) {
                     layer.alert(xhr.statusText, { icon: 5 });
                 }
             });
+        });
 
+        $("#Update").on("click", function () {
+            var ID = $("#ID").val();
+            var BookName = $("#BookName").val();
+            var Author = $("#Author").val();
+            var Price = $("#Price").val();
+            var Publishing = $("#Publishing").val();
+            var Priceformat = /(^[1-9]([0-9]+)?(\.[0-9]{1,2})?$)|(^(0){1}$)|(^[0-9]\.[0-9]([0-9])?$)/;  //验证金额的正则表达式（两位小数）
 
+            if (ID == "" || BookName == "" || Author == "" || Price == "" || Publishing == "") {
+                layer.alert('所有信息不能为空', { icon: 5 });
+            }
+            else if (jsonID == ID && jsonBookName == BookName && jsonAuthor == Author && 
+                jsonPrice == Price && jsonPub == Publishing) {
+
+                layer.alert('您没有修改任何信息', { icon: 5 });
+            }
+            else if (Priceformat.test(Price)) {
+                var updateid = 0;  //0没有修改ID, jsonID修改前ID
+                if (jsonID != ID) {
+                    updateid = jsonID;
+                }
+
+                var jsondata = {
+                    ID: ID, BookName: BookName, Author: Author,
+                    Price: Price, Publishing: Publishing, updateid: updateid
+                };
+
+               $.ajax({
+                        type: "PUT",
+                        url: "PutBook",
+                        data: jsondata,
+                        success: function (data) {
+                            var json = JSON.parse(data);
+
+                            if (json.state == 1) {
+                                layer.alert(json.msg, { icon: 6 });
+                            }
+                            else {
+                                layer.alert(json.msg, { icon: 5 });
+                            }
+                        },
+                        error: function (xhr) {
+                            layer.alert(xhr.statusText, { icon: 5 });
+                        }
+               });
+            }
+            else{
+                    layer.alert('金额格式错误', { icon: 5 });
+            }
+        });
+
+            //取消，关闭窗口
+        $("#cancel").on("click", function () {
+            var layerindex = parent.layer.getFrameIndex(window.name);
+            parent.layer.close(layerindex);
         });
     </script>
 </body>
