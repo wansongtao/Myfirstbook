@@ -38,6 +38,11 @@ namespace MyFirstBook.Controllers
             return View();
         }
 
+        public IActionResult BookTable()
+        {
+            return View();
+        }
+
         public IActionResult Addbook()
         {
             return View();
@@ -65,6 +70,14 @@ namespace MyFirstBook.Controllers
         {
             var allbooklist = new BookController();
             string json = allbooklist.GetBook();
+            return json;
+        }
+
+        public string Getbooklayui(int page, int limit)
+        {
+            var allbooktable = new BookController();
+            string json = allbooktable.GetBookLayui(page, limit);
+            //var data = "{\"code\": 0, \"msg\": \"\", \"count\": 1000, \"data\": " + json + "}";
             return json;
         }
 

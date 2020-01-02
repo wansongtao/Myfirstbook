@@ -92,7 +92,8 @@
                 <button type="button" id="Update" class="layui-btn layui-btn-radius layui-btn-danger">修改</button>
                 <button type="reset" class="layui-btn layui-btn-radius layui-btn-danger">重置</button>
 
-                <button type="button" id="JumpToPage" class="layui-btn layui-btn-radius layui-btn-danger">跳转页面</button>
+                <button type="button" id="JumpToPageB" class="layui-btn layui-btn-radius layui-btn-danger">bootstrap</button>
+                <button type="button" id="JumpToPageL" class="layui-btn layui-btn-radius layui-btn-danger">layui</button>
             </div>
         </div>
 
@@ -266,8 +267,12 @@
             });
 
             //跳转页面
-            $("#JumpToPage").on("click", function () {
+            $("#JumpToPageB").on("click", function () {
                 window.location.href = "Home/Bookview";
+            });
+
+            $("#JumpToPageL").on("click", function () {
+                window.location.href = "Home/BookTable";
             });
 
         });

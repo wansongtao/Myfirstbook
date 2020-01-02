@@ -96,3 +96,76 @@ function AlterBook(data) {
         layer.alert(json.msg, { icon: 5 });
     }
 }
+
+//layui表格 删除事件
+function DelbookLayui(data) {
+    var json = JSON.parse(data);
+
+    if (json.state == 1) {
+        LayuiTable();
+
+        layer.alert(json.msg, { icon: 6 });
+    }
+    else {
+        layer.alert(json.msg, { icon: 5 });
+    }
+}
+
+//给表格赋值数据
+function LayuiTable() {
+
+    layui.use('table', function () {
+        var table = layui.table;
+
+        //展示已知数据
+        var wst = table.render({
+            elem: '#demo'
+            , id: 'testTable'
+            , cols: [[ //标题栏
+                { type: 'checkbox', fixed: 'left' }
+                , { field: 'BookId', title: 'ID', width: 60, sort: true, fixed: 'left' }
+                , { field: 'BookName', title: '书名', width: 150 }
+                , { field: 'Author', title: '作者', minWidth: 150 }
+                , { field: 'Price', title: '价格', minWidth: 100, sort: true }
+                , { field: 'Publishing', title: '出版社', width: 150 }
+                , { fixed: 'right', title: '操作', toolbar: '#barDemo', width: 150 }
+            ]]
+            , response: {
+                statusName: 'state' //规定数据状态的字段名称，默认：code
+                , statusCode: 100 //规定成功的状态码，默认：0
+                //,msgName: 'hint' //规定状态信息的字段名称，默认：msg
+                //,countName: 'total' //规定数据总数的字段名称，默认：count
+                //,dataName: 'rows' //规定数据列表的字段名称，默认：data
+            }
+            , url: 'Getbooklayui'
+            , method: 'get'
+            , parseData: function (res) { //res 即为原始返回的数据
+                return {
+                    "state": res.state, //解析接口状态
+                    "msg": res.msg, //解析提示文本
+                    "count": res.count, //解析数据长度
+                    "data": res.data //解析数据列表(res:json字符串格式)
+                };
+            }
+            , even: true  //隔行背景
+            , page: true //是否显示分页
+            , limit: 10 //每页默认显示的数量
+            , limits: [5, 10, 15, 20]
+            , width: 800
+            , height: 500
+            //, done: function (res, curr, count) {
+            //    //如果是异步请求数据方式，res即为你接口返回的信息。
+            //    //如果是直接赋值的方式，res即为：{data: [], count: 99} data为当前页数据、count为数据总长度
+            //    console.log(res);
+
+            //    //得到当前页码
+            //    console.log(curr);
+
+            //    //得到数据总量
+            //    console.log(count);
+            //}
+        });
+
+        //wst.config.limit;  //默认每页行数
+    });
+}

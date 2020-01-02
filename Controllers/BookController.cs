@@ -21,9 +21,22 @@ namespace MyFirstBook.Controllers
         #endregion
 
         #region 定义返回信息
-        public int state;  //0失败，1成功
-        public string msg = "";  //具体信息
-        public string json;  //返回字符串
+
+        /// <summary>
+        /// 0失败，1成功, 100查询数据成功（赋值给表格）
+        /// </summary>
+        public int state;
+
+        /// <summary>
+        /// 提示文本
+        /// </summary>
+        public string msg;
+
+        /// <summary>
+        /// 返回json格式字符串 
+        /// </summary>
+        public string json;
+
         #endregion
 
         // GET: api/Book
@@ -40,6 +53,7 @@ namespace MyFirstBook.Controllers
 
                     if(booklist.Count > 0)
                     {
+                        //int total = booklist.Count;
                         json = JsonConvert.SerializeObject(booklist);  //转化为json字符串写法
                     }
                     else
@@ -56,6 +70,76 @@ namespace MyFirstBook.Controllers
                 state = 0;
                 msg = ex.Message;
                 json = "{\"state\":\"" + state + "\", \"msg\":\"" + msg + "\"}";
+                return json;
+            }
+        }
+
+        [HttpGet]
+        public string GetBookLayui(int page, int limit)  //查找数据库中所有书籍信息
+        {
+            try
+            {
+                string sql = null;
+
+                string sqlone = "select * from Book where rownum <= :limit and Isdelete = :Isdelete ";
+                string sqltwo = " and BookId not in (select BookId from Book where rownum <= :PageLimit and Isdelete = :Isdelete)";
+                string allsql = "select BookId from Book where Isdelete = :Isdelete";
+
+                using (OracleConnection conn = new OracleConnection(MyConnectionString))
+                {
+                    var allbooklist = conn.Query<Book>(allsql, new { Isdelete = 0 }).ToList();
+
+                    if(allbooklist.Count > 0)
+                    {
+                        var booklist = allbooklist;
+
+                        if (page > 1)
+                        {
+                            int PageLimit = (page - 1) * limit;
+                            sql = sqlone + sqltwo;
+
+                            booklist = conn.Query<Book>(sql, new { limit, Isdelete = 0, PageLimit }).ToList();
+                        }
+                        else if (page == 1)
+                        {
+                            sql = sqlone;
+
+                            booklist = conn.Query<Book>(sql, new { limit, Isdelete = 0 }).ToList();
+                        }
+                        else
+                        {
+                            state = 0;
+                            msg = "页码错误";
+                            json = "{\"state\": "+ state + ", \"msg\": " + msg + ", \"count\": 0, \"data\": \"\"}";
+                        }
+
+                        if (booklist.Count > 0)
+                        {
+                            json = JsonConvert.SerializeObject(booklist);  //转化为json字符串写法
+                            json = "{\"state\": 100, \"msg\": \"成功获取数据\", \"count\": " + allbooklist.Count + ", \"data\": " + json + "}";
+                        }
+                        else
+                        {
+                            state = 0;
+                            msg = "未查找到数据";
+                            json = "{\"state\": " + state + ", \"msg\": \"" + msg + "\", \"count\": 0, \"data\": [ ]}";
+                        }
+                    }
+                    else
+                    {
+                        state = 0;
+                        msg = "未查找到数据";
+                        json = "{\"state\": "+ state +", \"msg\": \"" + msg + "\", \"count\": 0, \"data\": [ ]}";
+                    }
+                    
+                }
+                return json;
+            }
+            catch (Exception ex)
+            {
+                state = 0;
+                msg = ex.Message;
+                json = "{\"state\": " + state + ", \"msg\": \"" + msg + "\", \"count\": 0, \"data\": [ ]}";
                 return json;
             }
         }
