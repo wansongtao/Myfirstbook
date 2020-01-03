@@ -37,7 +37,7 @@
     </script>
 
     <script>
-        var json, layer;
+        var json, layer, wpage, wlimits;
 
         layui.use('layer', function () {
             layer = layui.layer;
@@ -65,7 +65,9 @@
 
                     } else if (obj.event === 'edit') {
 
-                        layer.alert(data.BookId);
+                        layer.alert(wlimits);
+                        //layer.alert(data.length);
+                        
                     }
                 });
             });

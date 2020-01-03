@@ -97,12 +97,29 @@ function AlterBook(data) {
     }
 }
 
-//layui表格 删除事件
+//layui表格 删除、修改事件
 function DelbookLayui(data) {
     var json = JSON.parse(data);
 
     if (json.state == 1) {
-        LayuiTable();
+
+        if (wlimits - 1 == 0) {
+            wpage -= 1;
+        }
+
+        //删除后对table进行重载
+        layui.use('table', function () {
+            var table = layui.table;
+
+            table.reload('testTable', {
+                page: {
+                    curr: wpage
+                },
+                where: {
+                    empty: "无意义"
+                }
+            }, 'data');
+        });
 
         layer.alert(json.msg, { icon: 6 });
     }
@@ -111,7 +128,7 @@ function DelbookLayui(data) {
     }
 }
 
-//给表格赋值数据
+//给表格赋值数据， 赋值未知数据
 function LayuiTable() {
 
     layui.use('table', function () {
@@ -153,19 +170,18 @@ function LayuiTable() {
             , limits: [5, 10, 15, 20]
             , width: 800
             , height: 500
-            //, done: function (res, curr, count) {
-            //    //如果是异步请求数据方式，res即为你接口返回的信息。
-            //    //如果是直接赋值的方式，res即为：{data: [], count: 99} data为当前页数据、count为数据总长度
-            //    console.log(res);
+            , done: function (res, curr, count) {
+                //如果是异步请求数据方式，res即为你接口返回的信息。
+                //如果是直接赋值的方式，res即为：{data: [], count: 99} data为当前页数据、count为数据总长度
 
-            //    //得到当前页码
-            //    console.log(curr);
+                wlimits = res.data.length;  //每页的具体行数
 
-            //    //得到数据总量
-            //    console.log(count);
-            //}
+                wpage = curr;  //当前页码
+            }
         });
 
         //wst.config.limit;  //默认每页行数
     });
+
+    
 }
