@@ -121,6 +121,7 @@
             }
             else if (Priceformat.test(Price)) {
                 var updateid = 0;  //0没有修改ID, jsonID修改前ID
+
                 if (jsonID != ID) {
                     updateid = jsonID;
                 }
@@ -137,10 +138,10 @@
             }
         });
 
-            //取消，关闭窗口
+        //取消，关闭窗口
         $("#cancel").on("click", function () {
-            var layerindex = parent.layer.getFrameIndex(window.name);
-            parent.layer.close(layerindex);
+            var layerindex = parent.layer.getFrameIndex(window.name);  //获取当前窗口索引
+            parent.layer.close(layerindex);  //关闭当前窗口
         });
     </script>
 </body>

@@ -83,13 +83,19 @@ namespace MyFirstBook.Controllers
 
                 string sqlone = "select * from Book where rownum <= :limit and Isdelete = :Isdelete ";
                 string sqltwo = " and BookId not in (select BookId from Book where rownum <= :PageLimit and Isdelete = :Isdelete)";
-                string allsql = "select BookId from Book where Isdelete = :Isdelete";
+                string allsql = "select Count(Isdelete) as BookId from Book where Isdelete = :Isdelete";
 
                 using (OracleConnection conn = new OracleConnection(MyConnectionString))
                 {
+                    int Records = 0;
                     var allbooklist = conn.Query<Book>(allsql, new { Isdelete = 0 }).ToList();
 
-                    if(allbooklist.Count > 0)
+                    foreach(var item in allbooklist)
+                    {
+                        Records = item.BookId;  //数据总量（多少条数据）
+                    }
+
+                    if(Records > 0)
                     {
                         var booklist = allbooklist;
 
@@ -109,19 +115,19 @@ namespace MyFirstBook.Controllers
                         else
                         {
                             state = 0;
-                            msg = "页码错误";
+                            msg = "页码获取错误";
                             json = "{\"state\": "+ state + ", \"msg\": " + msg + ", \"count\": 0, \"data\": \"\"}";
                         }
 
                         if (booklist.Count > 0)
                         {
                             json = JsonConvert.SerializeObject(booklist);  //转化为json字符串写法
-                            json = "{\"state\": 100, \"msg\": \"成功获取数据\", \"count\": " + allbooklist.Count + ", \"data\": " + json + "}";
+                            json = "{\"state\": 100, \"msg\": \"成功获取数据\", \"count\": " + Records + ", \"data\": " + json + "}";
                         }
                         else
                         {
                             state = 0;
-                            msg = "未查找到数据";
+                            msg = "分页失败";
                             json = "{\"state\": " + state + ", \"msg\": \"" + msg + "\", \"count\": 0, \"data\": [ ]}";
                         }
                     }
@@ -336,6 +342,56 @@ namespace MyFirstBook.Controllers
             }
         }
 
+        //删除多条数据
+        public string ManyDeleteBook(int[] NumberId)
+        {
+            try
+            {
+                string ID = null;
+                int NumberIdLength = NumberId.Length;
 
+                //获取删除数据的ID
+                for (int i = 0; i < NumberId.Length; i++)
+                {
+                    if(i == 0)
+                    {
+                        ID = NumberId[i].ToString();
+                    }
+                    else if(i > 0)
+                    {
+                        ID += "," + NumberId[i];
+                    }
+                    
+                }
+
+                using(OracleConnection conn = new OracleConnection(MyConnectionString))
+                {
+                    string sql = "update Book set Isdelete = :Isdelete where BookId in("+ ID +")";
+
+                    int deletebook = conn.Execute(sql, new { Isdelete = 1});
+
+                    if(deletebook > 0)
+                    {
+                        state = 1;
+                        msg = "删除成功";
+                    }
+                    else
+                    {
+                        state = 0;
+                        msg = "删除失败";
+                    }
+                    json = "{\"state\": " + state + ",\"msg\":\"" + msg + "\", \"NumberIdLength\":"+ NumberIdLength + "}";
+                }
+
+                return json;
+            }
+            catch(Exception ex)
+            {
+                state = 0;
+                msg = ex.Message;
+                json = "{\"state\": " + state + ",\"msg\":\"" + msg + "\"}";
+                return json;
+            }
+        }
     }
 }

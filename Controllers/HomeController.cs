@@ -109,6 +109,13 @@ namespace MyFirstBook.Controllers
             return json;
         }
 
+        public string ManyDelete(int[] NumberId)
+        {
+            var Delbook = new BookController();
+            string json = Delbook.ManyDeleteBook(NumberId);
+            return json;
+        }
+
         //public IActionResult Privacy()
         //{
         //    return View();

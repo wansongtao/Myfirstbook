@@ -19,17 +19,30 @@
 <body>
 
     <div style="margin: auto; width: 800px;">
-        <div style="height: 100px;"></div>
+        <div style="height: 50px;"></div>
+
+        <div class="layui-form-item">
+
+            <div class="layui-inline">
+                <label class="layui-form-label">搜索：</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="seachinput" lay-verify="required" placeholder="请输入书名、作者、出版社" autocomplete="off" class="layui-input">
+                </div>
+                <button type="button" id="Inquire" class="layui-btn layui-btn-radius layui-btn-normal">搜索</button>
+                <button type="button" id="reset" class="layui-btn layui-btn-radius layui-btn-normal">重置</button>
+            </div>
+
+        </div>
+
         <table class="layui-table" id="demo" lay-filter="test"></table>
     </div>
 
-    @*<script type="text/html" id="toolbarDemo">
+    <script type="text/html" id="toolbarDemo">
         <div class="layui-btn-container">
-            <button class="layui-btn layui-btn-sm" lay-event="getCheckData">获取选中行数据</button>
-            <button class="layui-btn layui-btn-sm" lay-event="getCheckLength">获取选中数目</button>
-            <button class="layui-btn layui-btn-sm" lay-event="isAll">验证是否全选</button>
+            <button class="layui-btn layui-btn-sm" lay-event="getCheckAdd">添加</button>
+            <button class="layui-btn layui-btn-sm" lay-event="getCheckDel">删除</button>
         </div>
-    </script>*@
+    </script>
 
     <script type="text/html" id="barDemo">
         <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
@@ -49,24 +62,88 @@
             layui.use('table', function () {
                 var table = layui.table;
 
+                //头工具栏事件
+                table.on('toolbar(test)', function (obj) {
+                    //checkStatus:{"data":[],"isAll":false}   obj.config.id为table.render事件的ID
+                    var checkStatus = table.checkStatus(obj.config.id);
+                    var data = checkStatus.data;
+
+                    switch(obj.event){
+                        case 'getCheckAdd':  //添加事件
+                            var index = layer.open({
+                                title: '添加',
+                                type: 2,
+                                area: ['50%', '80%'],
+                                fix: false,
+                                maxmin: true,
+                                scrollbar: true,
+                                content: 'Addbook',
+                                end: function () {
+                                    
+                                    //添加后重载数据
+                                    var jsondata = { page: wpage, limit: wlimits };
+                                    Bookfunction = AlterBooklayui;
+                                    ajax("GET", "Getbooklayui", jsondata, Bookfunction);
+                                }
+                            });
+
+                            break;
+                        case 'getCheckDel':  //删除事件
+
+                            if (data.length > 0) {
+                                var NumberId = [];
+                                for (var i = 0; i < data.length; i++) {
+                                    NumberId[i] = data[i].BookId;
+                                }
+
+                                var jsondata = { NumberId: NumberId };
+                                var Bookfunction = DelManybook;
+                                ajax("DELETE", "ManyDelete", jsondata, Bookfunction);
+                            }
+                            else {
+                                layer.alert('请先选择您要删除的数据', { icon: 5 });
+                            }
+                            break;
+                        default:
+                            layer.alert('事件获取失败', { icon: 5 });
+                            break;
+                    };
+                });
+
                 //监听行工具事件  test: lay-filter="test"
                 table.on('tool(test)', function (obj) {
                     var data = obj.data;
+                    var id = data.BookId;
 
-                    if (obj.event === 'del') {
+                    if (obj.event === 'del') {//删除按钮
+
                         var index = layer.confirm('确定删除？', {
                             btn: ['确定', '取消'] //按钮
                         }, function () {
-                            var id = data.BookId;
+                            
                             var jsondata = { id: id };
                             Bookfunction = DelbookLayui;
                             ajax("DELETE", "DeleteBookOne", jsondata, Bookfunction);
                         });
 
-                    } else if (obj.event === 'edit') {
+                    } else if (obj.event === 'edit') {//编辑按钮
 
-                        layer.alert(wlimits);
-                        //layer.alert(data.length);
+                        var index = layer.open({
+                            title: '编辑',
+                            type: 2,
+                            area: ['50%', '80%'],
+                            fix: false,
+                            maxmin: true,
+                            scrollbar: true,
+                            content: 'Updatebook?ID=' + id,
+                            end: function () {
+                                //修改后重载数据
+                                var jsondata = { page: wpage, limit: wlimits };
+                                Bookfunction = AlterBooklayui;
+                                ajax("GET", "Getbooklayui", jsondata, Bookfunction);
+                                
+                            }
+                        });
                         
                     }
                 });
@@ -75,7 +152,10 @@
             
         });
 
-
+        //重置
+        $("#reset").on("click", function () {
+            //layer.alert(wst.config.limit);
+        });
 
     </script>
 </body>

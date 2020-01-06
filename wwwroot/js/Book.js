@@ -1,4 +1,5 @@
-﻿//异步请求
+﻿
+//异步请求
 function ajax(APItype, FileAddress, jsondata, Bookfunction) {
     $.ajax({
         type: APItype,
@@ -83,14 +84,15 @@ function AlterBook(data) {
     var json = JSON.parse(data);
 
     if (json.state == 1) {
+
         layer.alert(json.msg, { icon: 6 });  //弹出框，提示操作成功
 
-        //三秒后关闭窗口
+        //两秒后关闭窗口
         setTimeout(function () {
             var layerindex = parent.layer.getFrameIndex(window.name);
             parent.layer.close(layerindex);
 
-        }, 3000);
+        }, 2000);
     }
     else {
         layer.alert(json.msg, { icon: 5 });
@@ -103,23 +105,27 @@ function DelbookLayui(data) {
 
     if (json.state == 1) {
 
+        //如果当前页没有数据了，则页码减一
         if (wlimits - 1 == 0) {
             wpage -= 1;
         }
 
         //删除后对table进行重载
-        layui.use('table', function () {
-            var table = layui.table;
+        LayuiLoadTable();
 
-            table.reload('testTable', {
-                page: {
-                    curr: wpage
-                },
-                where: {
-                    empty: "无意义"
-                }
-            }, 'data');
-        });
+        //layui.use('table', function () {
+        //    var table = layui.table;
+
+        //    // table.render的ID：testTable
+        //    table.reload('testTable', {
+        //        page: {
+        //            curr: wpage    //重载数据的页码
+        //        },
+        //        where: {
+        //            empty: "无意义"
+        //        }
+        //    }, 'data');
+        //});
 
         layer.alert(json.msg, { icon: 6 });
     }
@@ -128,7 +134,7 @@ function DelbookLayui(data) {
     }
 }
 
-//给表格赋值数据， 赋值未知数据
+//layui给表格赋值数据， 赋值未知数据
 function LayuiTable() {
 
     layui.use('table', function () {
@@ -136,8 +142,9 @@ function LayuiTable() {
 
         //展示已知数据
         var wst = table.render({
-            elem: '#demo'
-            , id: 'testTable'
+            elem: '#demo'  //表格ID
+            , id: 'testTable'  //该事件的ID
+            , toolbar: '#toolbarDemo' //开启头部工具栏，并为其绑定左侧模板
             , cols: [[ //标题栏
                 { type: 'checkbox', fixed: 'left' }
                 , { field: 'BookId', title: 'ID', width: 60, sort: true, fixed: 'left' }
@@ -154,8 +161,8 @@ function LayuiTable() {
                 //,countName: 'total' //规定数据总数的字段名称，默认：count
                 //,dataName: 'rows' //规定数据列表的字段名称，默认：data
             }
-            , url: 'Getbooklayui'
-            , method: 'get'
+            , url: 'Getbooklayui'  //后台方法
+            , method: 'get'  //web api类型
             , parseData: function (res) { //res 即为原始返回的数据
                 return {
                     "state": res.state, //解析接口状态
@@ -167,7 +174,7 @@ function LayuiTable() {
             , even: true  //隔行背景
             , page: true //是否显示分页
             , limit: 10 //每页默认显示的数量
-            , limits: [5, 10, 15, 20]
+            , limits: [5, 10, 15, 20]  //用户可以选择每页显示的数量
             , width: 800
             , height: 500
             , done: function (res, curr, count) {
@@ -184,4 +191,72 @@ function LayuiTable() {
     });
 
     
+}
+
+//layui重载表格
+function LayuiLoadTable() {
+
+    layui.use('table', function () {
+        var table = layui.table;
+
+        // table.render的ID：testTable
+        table.reload('testTable', {
+            page: {
+                curr: wpage    //重载数据的页码
+            },
+            where: {
+                empty: "无意义"
+            }
+        }, 'data');
+    });
+
+}
+
+function AlterBooklayui(data) {
+    var json = JSON.parse(data);
+
+    if (json.state == 100) {
+
+        layui.use('table', function () {
+            var table = layui.table;
+
+            // table.render的ID：testTable
+            table.reload('testTable', {
+                page: {
+                    curr: wpage    //重载数据的页码
+                },
+                where: {
+                    empty: "无意义"
+                }
+            }, 'data');
+        });
+
+        //两秒后关闭窗口
+        setTimeout(function () {
+            var layerindex = parent.layer.getFrameIndex(window.name);
+            parent.layer.close(layerindex);
+
+        }, 2000);
+    }
+    else {
+        layer.alert(json.msg, { icon: 5 });
+    }
+}
+
+//删除多条数据后重载数据
+function DelManybook(data) {
+    var json = JSON.parse(data);
+
+    if (json.state == 1) {
+        if (wlimits - json.NumberIdLength == 0) {
+            wpage -= 1;
+        }
+
+        layer.alert(json.msg, { icon: 6 });
+
+        LayuiLoadTable();
+    }
+    else {
+        layer.alert(json.msg, { icon: 5 });
+    }
 }
