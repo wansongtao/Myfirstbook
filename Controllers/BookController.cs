@@ -393,5 +393,40 @@ namespace MyFirstBook.Controllers
                 return json;
             }
         }
+
+        //搜索数据
+        public string SeachBooklist(string seachText)
+        {
+            try
+            {
+                using(OracleConnection conn = new OracleConnection(MyConnectionString))
+                {
+                    string sql = "select BookId, BookName, Author, Price, Publishing from Book where Isdelete = :Isdelete and " +
+                        " (BookName like '%"+ seachText + "%' or Author like'%" + seachText + "%' or Publishing like'%" + seachText + "%')";
+
+                    var seachlist = conn.Query<Book>(sql, new { Isdelete = 0}).ToList();
+
+                    if(seachlist.Count > 0)
+                    {
+                        json = JsonConvert.SerializeObject(seachlist);
+                        json = "{\"state\": 100, \"msg\": \"成功获取数据\", \"count\": " + seachlist.Count + ", \"data\": " + json + "}";
+                    }
+                    else
+                    {
+                        state = 0;
+                        msg = "未搜索到相关内容";
+                        json = "{\"state\": " + state + ", \"msg\": \"" + msg + "\", \"count\": 0, \"data\": [ ]}";
+                    }
+                }
+                return json;
+            }
+            catch(Exception ex)
+            {
+                state = 0;
+                msg = ex.Message;
+                json = "{\"state\": " + state + ", \"msg\": \"" + msg + "\", \"count\": 0, \"data\": [ ]}";
+                return json;
+            } 
+        }
     }
 }

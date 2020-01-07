@@ -113,20 +113,6 @@ function DelbookLayui(data) {
         //删除后对table进行重载
         LayuiLoadTable();
 
-        //layui.use('table', function () {
-        //    var table = layui.table;
-
-        //    // table.render的ID：testTable
-        //    table.reload('testTable', {
-        //        page: {
-        //            curr: wpage    //重载数据的页码
-        //        },
-        //        where: {
-        //            empty: "无意义"
-        //        }
-        //    }, 'data');
-        //});
-
         layer.alert(json.msg, { icon: 6 });
     }
     else {
@@ -140,7 +126,7 @@ function LayuiTable() {
     layui.use('table', function () {
         var table = layui.table;
 
-        //展示已知数据
+        //展示未知数据
         var wst = table.render({
             elem: '#demo'  //表格ID
             , id: 'testTable'  //该事件的ID
@@ -187,7 +173,7 @@ function LayuiTable() {
             }
         });
 
-        //wst.config.limit;  //默认每页行数
+        //defaultlimit = wst.config.limit;  //默认每页行数
     });
 
     
@@ -258,5 +244,40 @@ function DelManybook(data) {
     }
     else {
         layer.alert(json.msg, { icon: 5 });
+    }
+}
+
+//搜索
+function seachBook(data) {
+    var res = JSON.parse(data);
+
+    if (res.state == 100) {
+        //赋值已知数据
+        layui.use('table', function () {
+            var table = layui.table;
+
+            table.render({
+                elem: '#demo'  //表格ID
+                , id: 'seachTable'  //该事件的ID
+                , toolbar: '#toolbarDemo' //开启头部工具栏，并为其绑定左侧模板
+                , cols: [[ //标题栏
+                    { type: 'checkbox', fixed: 'left' }
+                    , { field: 'BookId', title: 'ID', width: 60, sort: true, fixed: 'left' }
+                    , { field: 'BookName', title: '书名', width: 150 }
+                    , { field: 'Author', title: '作者', minWidth: 150 }
+                    , { field: 'Price', title: '价格', minWidth: 100, sort: true }
+                    , { field: 'Publishing', title: '出版社', width: 150 }
+                    , { fixed: 'right', title: '操作', toolbar: '#barDemo', width: 150 }
+                ]]
+                ,data: res.data
+                , even: true  //隔行背景
+                , page: false //是否显示分页
+                , width: 800
+                , height: 500
+            });
+        });
+    }
+    else {
+        layer.alert(res.msg, { icon: 5 });
     }
 }

@@ -81,6 +81,13 @@ namespace MyFirstBook.Controllers
             return json;
         }
 
+        public string SeachBook(string seachText)
+        {
+            var Seachbooktable = new BookController();
+            string json = Seachbooktable.SeachBooklist(seachText);
+            return json;
+        }
+
         /// <summary>
         /// 修改书籍信息
         /// </summary>

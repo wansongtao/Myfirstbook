@@ -152,9 +152,37 @@
             
         });
 
+        //搜索
+        $("#Inquire").on("click", function () {
+            var seachText = $("#seachinput").val();
+
+            if (seachText != "") {
+                var jsondata = { seachText: seachText };
+                var Bookfunction = seachBook;
+                ajax("GET", "SeachBook", jsondata, Bookfunction);
+            }
+            else {
+                layer.alert('请先输入您要搜索的内容', { icon: 5 });
+            }
+        });
+
         //重置
         $("#reset").on("click", function () {
-            //layer.alert(wst.config.limit);
+            $("#seachinput").val("");
+
+            layui.use('table', function () {
+                var table = layui.table;
+
+                // table.render的ID：testTable
+                table.reload('testTable', {
+                    page: {
+                        curr: 1    //重载数据的页码
+                    },
+                    where: {
+                        empty: "无意义"
+                    }
+                }, 'data');
+            });
         });
 
     </script>
